@@ -4,7 +4,7 @@
 > dan **dwibahasa (Indonesia + Inggris)** — dibangun untuk siapa pun yang
 > mengembangkan tool, aplikasi, atau layanan Alkitab.
 
-[![CI](https://github.com/REPLACE_ORG/strongs-dictionary-json/actions/workflows/ci.yml/badge.svg)](https://github.com/REPLACE_ORG/strongs-dictionary-json/actions/workflows/ci.yml)
+[![CI](https://github.com/andysaktia/strongs-dictionary-json/actions/workflows/ci.yml/badge.svg)](https://github.com/andysaktia/strongs-dictionary-json/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/strongs-dictionary-json.svg)](https://www.npmjs.com/package/strongs-dictionary-json)
 [![License: MIT](https://img.shields.io/badge/code%20license-MIT-blue.svg)](LICENSE)
 [![Data License: CC BY 4.0](https://img.shields.io/badge/data%20license-CC%20BY%204.0-lightgrey.svg)](LICENSE-DATA)
