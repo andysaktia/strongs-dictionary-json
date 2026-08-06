@@ -88,12 +88,12 @@ const elohim = dictionary.find(e => e.strong_number === "H430");
 
 ### Via file statis / CDN
 ```
-https://cdn.jsdelivr.net/gh/REPLACE_ORG/strongs-dictionary-json@main/data/combined/strongs-full.json
+https://cdn.jsdelivr.net/gh/andysaktia/strongs-dictionary-json@main/data/combined/strongs-full.json
 ```
 
 ### Via clone repo (untuk kontribusi / development pipeline)
 ```bash
-git clone https://github.com/REPLACE_ORG/strongs-dictionary-json.git
+git clone https://github.com/andysaktia/strongs-dictionary-json.git
 cd strongs-dictionary-json
 pip install -r requirements.txt
 python scripts/validate.py
