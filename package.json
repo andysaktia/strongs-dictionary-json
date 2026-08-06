@@ -1,0 +1,33 @@
+{
+  "name": "strongs-dictionary-json",
+  "version": "0.1.0",
+  "description": "Strong's Hebrew & Greek Dictionary sebagai dataset JSON bersih dan terstruktur (Bahasa Indonesia + Inggris) untuk tool Alkitab.",
+  "main": "data/combined/strongs-full.json",
+  "files": [
+    "data",
+    "schema",
+    "LICENSE",
+    "LICENSE-DATA",
+    "README.md"
+  ],
+  "keywords": [
+    "bible",
+    "strongs-concordance",
+    "hebrew",
+    "greek",
+    "lexicon",
+    "dataset",
+    "json",
+    "indonesia",
+    "alkitab"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/REPLACE_ORG/strongs-dictionary-json.git"
+  },
+  "license": "SEE LICENSE-DATA",
+  "author": "",
+  "engines": {
+    "node": ">=18"
+  }
+}

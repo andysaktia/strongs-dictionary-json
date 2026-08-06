@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate dataset & run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate JSON schema
+        run: python scripts/validate.py
+
+      - name: Run unit tests
+        run: pytest tests/ -v
+
+      - name: Build combined dataset
+        run: python scripts/build_combined.py
+
+      - name: Check combined output is committed
+        run: |
+          git diff --exit-code data/combined/strongs-full.json || \
+          (echo "::warning::data/combined/strongs-full.json belum sinkron, jalankan scripts/build_combined.py lalu commit ulang." )

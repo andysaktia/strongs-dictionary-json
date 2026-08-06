@@ -1,0 +1,55 @@
+# Lisensi & Atribusi Dataset
+
+Dataset di folder `data/` merupakan turunan (derivative work) dari beberapa
+sumber dengan status lisensi berbeda. Mohon baca dengan saksama sebelum
+menggunakan dataset ini secara komersial.
+
+## 1. Teks Asli Strong's Dictionary (1890)
+
+- **Karya**: "The New Strong's Exhaustive Concordance of the Bible" oleh
+  James Strong, S.T.D., LL.D., 1890.
+- **Status**: Public Domain ("Public Domain -- Copy Freely", sebagaimana
+  dinyatakan pada e-text XML tahun 2006 oleh Ulrik Petersen).
+
+## 2. Data Terstruktur Turunan (XML)
+
+- **Sumber**: OpenScriptures Strong's Dictionaries
+  (https://github.com/openscriptures/strongs) dan
+  OpenScriptures Hebrew Lexicon
+  (https://github.com/openscriptures/HebrewLexicon).
+- **Lisensi**: Sebagian data terstruktur turunan (mis. lemma & morfologi pada
+  proyek terkait OpenScriptures Hebrew Bible) dilisensikan di bawah
+  **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
+  Atribusi wajib: "Open Scriptures Hebrew Bible Project" /
+  "OpenScriptures".
+- Wajib diverifikasi ulang per file saat proses ETL, karena beberapa file
+  dalam repo sumber belum memiliki pernyataan lisensi eksplisit per-file.
+
+## 3. Terjemahan Bahasa Indonesia (kolom `definition.id`)
+
+- Entri dengan `translation_status: "machine"` dihasilkan dengan bantuan AI
+  (Claude, Anthropic) dan **belum ditinjau manusia**. Gunakan dengan hati-hati
+  untuk keperluan studi serius.
+- Entri dengan `translation_status: "reviewed"` telah ditinjau kontributor
+  manusia.
+- Entri dengan `translation_status: "official-sabda"` (jika ada di masa depan)
+  berasal dari data resmi mitra SABDA YLSA, dengan lisensi/atribusi terpisah
+  yang akan dicantumkan di sini saat tersedia.
+- Terjemahan komunitas pada dataset ini dilisensikan **CC BY-SA 4.0**
+  kecuali dinyatakan lain per-entri.
+
+## 4. Ringkasan Praktis
+
+| Komponen | Lisensi | Wajib atribusi? |
+|---|---|---|
+| Teks definisi Inggris asli | Public Domain | Tidak wajib, disarankan |
+| Struktur XML turunan OpenScriptures | CC BY 4.0 | Ya |
+| Terjemahan ID (machine) | CC BY-SA 4.0 | Ya |
+| Terjemahan ID (reviewed/official) | CC BY-SA 4.0 / sesuai mitra | Ya |
+| Kode & schema di repo ini | MIT (lihat LICENSE) | Tidak wajib |
+
+**Jika menggunakan dataset ini**, sertakan atribusi minimal:
+> "Berdasarkan Strong's Dictionary (Public Domain) dan data OpenScriptures
+> (CC BY 4.0), dengan terjemahan Indonesia dari proyek strongs-dictionary-json."
+
+Silakan hubungi maintainer repo ini bila menemukan kekeliruan atribusi.

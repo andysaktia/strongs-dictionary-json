@@ -1,0 +1,33 @@
+# translation_rules.yaml
+#
+# Aturan ini dibaca oleh scripts/translate_id.py dan disuntikkan ke
+# system prompt Claude API setiap kali menerjemahkan definisi EN -> ID.
+# Edit file ini kapan saja -- tidak perlu ubah kode script.
+
+# Istilah yang WAJIB dipertahankan apa adanya (transliterasi Ibrani/Yunani),
+# TIDAK diterjemahkan/diganti dengan padanan Indonesia umum.
+preserve_terms:
+  - term: "Elohim"
+    note: "Nama/sebutan Ibrani untuk Tuhan (dari H430). Jangan diterjemahkan jadi 'Allah' atau 'Tuhan'."
+  - term: "YHWH"
+    note: "Tetragrammaton, nama diri Tuhan (dari H3068). Jangan diganti 'Allah', 'Tuhan', atau 'Yahweh' tanpa instruksi eksplisit."
+  - term: "Adonai"
+    note: "Sebutan 'Tuan/Tuhan' versi Ibrani (dari H136). Pertahankan bentuk transliterasi."
+  - term: "El Shaddai"
+    note: "Atribut/gelar Tuhan (dari H410 + H7706). Pertahankan bentuk transliterasi."
+  - term: "El Elyon"
+    note: "Atribut/gelar Tuhan 'Yang Mahatinggi' (dari H410 + H5945). Pertahankan bentuk transliterasi."
+  # Tambahkan nama/atribut Ibrani lain untuk Tuhan di sini sesuai kebutuhan,
+  # format: term + note singkat kenapa harus dipertahankan.
+
+# Kata/istilah yang TIDAK BOLEH dipakai dalam definisi.id, beserta alasan.
+forbidden_terms:
+  - term: "Allah"
+    reason: "Hindari padanan ini untuk nama diri/sebutan Ibrani seperti Elohim, YHWH, Adonai -- pertahankan transliterasi aslinya, jangan diterjemahkan ke istilah ini."
+
+# Panduan umum tambahan (bebas ditambah/kurangi sesuai kebutuhan proyek).
+general_guidelines:
+  - "Untuk entri yang BUKAN nama/atribut Tuhan (kata benda umum, kata kerja, dll), tetap terjemahkan secara wajar ke Bahasa Indonesia."
+  - "Jika definisi EN mengandung nama Ibrani/Yunani untuk Tuhan sebagai bagian dari kalimat penjelasan (bukan hanya sebagai lemma utama), tetap pertahankan transliterasinya, jangan diterjemahkan."
+  - "Konsisten gunakan padanan istilah teologis umum lain sesuai kelaziman Alkitab Terjemahan Baru (TB) LAI, KECUALI bertentangan dengan aturan preserve_terms/forbidden_terms di atas."
+  - "Jika ragu apakah sebuah lemma termasuk nama/atribut Tuhan atau bukan, pertahankan transliterasi aslinya (default aman: JANGAN terjemahkan)."
