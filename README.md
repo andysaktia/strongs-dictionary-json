@@ -95,6 +95,26 @@ data layer), jadi otomatis ikut versi terbaru yang di-push ke `main`.
    GitHub kamu (dan `GH_REPO` kalau nama repo beda).
 4. Tunggu beberapa menit, demo aktif di `https://<username>.github.io/strongs-dictionary-json/`.
 
+## Catatan Arsitektur: `docs/index.html`
+
+Halaman ini adalah **demo/preview data layer**, BUKAN Consumer Layer.
+Batasannya sengaja dijaga ketat:
+
+- Fungsinya murni menampilkan isi dataset (search + lihat detail entri) —
+  tidak ada fitur di luar itu (tidak ada bookmark, akun user, riwayat
+  pencarian, integrasi dengan data lain, dsb).
+- Data diambil dari artifact repo ini sendiri (jsDelivr CDN), bukan sumber
+  independen — jadi tidak menciptakan "produk" baru di luar data layer.
+
+**Trigger "naik kelas" jadi Consumer Layer sungguhan** (kalau salah satu
+ini terjadi, halaman ini harus dipisah jadi repo consumer terpisah yang
+menarik dari service layer, bukan langsung dari data layer):
+- Ada permintaan fitur di luar "lihat data" (mis. bookmark, anotasi, riwayat).
+- Halaman ini mulai di-embed/dipakai sebagai bagian dari produk lain
+  (bukan cuma showcase di repo ini sendiri).
+- Traffic-nya signifikan sampai perlu caching/rate-limiting sendiri —
+  itu tandanya butuh service layer di tengah, bukan fetch CDN langsung.
+
 ## Struktur Repo
 
 ```
