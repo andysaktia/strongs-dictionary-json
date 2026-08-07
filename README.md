@@ -9,6 +9,9 @@
 [![License: MIT](https://img.shields.io/badge/code%20license-MIT-blue.svg)](LICENSE)
 [![Data License: CC BY 4.0](https://img.shields.io/badge/data%20license-CC%20BY%204.0-lightgrey.svg)](LICENSE-DATA)
 
+
+**[🔍 Coba Live Demo →](https://REPLACE_ORG.github.io/strongs-dictionary-json/)** — cari langsung dari 14.197 entri tanpa clone/install apapun.
+
 ---
 
 ## Kenapa Proyek Ini Ada
@@ -54,7 +57,43 @@ untuk developer.
 }
 ```
 
+Contoh entri Yunani:
+
+```json
+{
+  "strong_number": "G26",
+  "lemma": "ἀγάπη",
+  "transliteration": "agápē",
+  "pronunciation": "ag-ah'-pay",
+  "language": "greek",
+  "part_of_speech": null,
+  "definition": {
+    "en": "love, i.e. affection or benevolence; specially (plural) a love-feast",
+    "id": null
+  },
+  "kjv_translations": ["charity", "dear", "love"],
+  "root": null,
+  "derivatives": [],
+  "occurrences_count": null,
+  "source": "openscriptures-greek-strongs",
+  "translation_status": "pending"
+}
+```
+
 Skema lengkap: [`schema/strongs.schema.json`](schema/strongs.schema.json).
+
+## Halaman Demo (GitHub Pages)
+
+Repo ini punya halaman pencarian statis di [`docs/index.html`](docs/index.html) —
+fetch data langsung dari jsDelivr CDN (bukan hardcode, tetap sesuai prinsip
+data layer), jadi otomatis ikut versi terbaru yang di-push ke `main`.
+
+**Cara aktifkan setelah push ke GitHub:**
+1. Buka **Settings → Pages** di repo GitHub kamu.
+2. Source: **Deploy from a branch**, branch `main`, folder `/docs`.
+3. Edit `docs/index.html`, ganti `GH_USER = "REPLACE_ORG"` dengan username
+   GitHub kamu (dan `GH_REPO` kalau nama repo beda).
+4. Tunggu beberapa menit, demo aktif di `https://<username>.github.io/strongs-dictionary-json/`.
 
 ## Struktur Repo
 
@@ -71,6 +110,7 @@ strongs-dictionary-json/
 │   ├── validate.py                     # Validasi schema
 │   └── build_combined.py               # Gabungkan hebrew+greek, hitung statistik
 ├── examples/                           # Contoh pakai: js, python, php
+├── docs/index.html                     # Demo pencarian statis (GitHub Pages)
 ├── tests/                              # pytest, dijalankan di CI
 └── .github/workflows/                  # CI (validasi) + publish (npm)
 ```
@@ -149,6 +189,34 @@ sudah berstatus `"machine"` — hanya memengaruhi entri baru yang diterjemahkan
 setelah perubahan. Untuk menerjemahkan ulang entri lama dengan rules baru,
 ubah `translation_status` entri terkait kembali ke `"pending"` lalu jalankan
 ulang script.
+
+### Dua Provider Terjemahan
+
+`translate_id.py` mendukung dua provider, keduanya membaca
+`translation_rules.yaml` yang sama:
+
+**1. Claude API (default)** — kualitas terbaik, estimasi biaya total untuk
+seluruh dataset (~14.000 entri) sekitar **$3-5** (sekali jalan, bukan
+biaya bulanan).
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+python scripts/translate_id.py --input data/hebrew/strongs-hebrew.json --limit 50
+```
+
+**2. Ollama (lokal, gratis)** — jalan di komputer sendiri pakai model
+seperti Gemma, tidak butuh API key atau internet (setelah model diunduh).
+Karena model lokal tetap bisa menerima system prompt custom, aturan
+`preserve_terms`/`forbidden_terms` tetap dipatuhi — beda dengan modul
+translate biasa (Google Translate/Argos) yang tidak punya konsep instruksi
+custom sama sekali. Kualitas & konsistensi hasilnya lebih bervariasi
+dibanding Claude, jadi disarankan lebih banyak review manual.
+```bash
+ollama pull gemma3:4b   # sekali saja; model kecil, cocok untuk RAM <=8GB
+python scripts/translate_id.py --input data/hebrew/strongs-hebrew.json \
+  --provider ollama --ollama-model gemma3:4b --limit 50
+```
+Pastikan Ollama sudah jalan (`ollama serve` atau aplikasi Ollama terbuka)
+sebelum menjalankan perintah di atas.
 
 ## Status Proyek
 

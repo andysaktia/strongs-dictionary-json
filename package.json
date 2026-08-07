@@ -1,7 +1,7 @@
 {
   "name": "strongs-dictionary-json",
   "version": "0.1.0",
-  "description": "Strong's Hebrew & Greek Dictionary sebagai dataset JSON bersih dan terstruktur (Bahasa Indonesia + Inggris) untuk tool Alkitab.",
+  "description": "Strong's Hebrew & Greek Dictionary sebagai dataset JSON bersih dan terstruktur (Bahasa Indonesia + Inggris) untuk tool Alkitab. Live demo: https://andysaktia.github.io/strongs-dictionary-json/",
   "main": "data/combined/strongs-full.json",
   "files": [
     "data",
@@ -21,9 +21,13 @@
     "indonesia",
     "alkitab"
   ],
+  "homepage": "https://andysaktia.github.io/strongs-dictionary-json/",
+  "bugs": {
+    "url": "https://github.com/andysaktia/strongs-dictionary-json/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/REPLACE_ORG/strongs-dictionary-json.git"
+    "url": "git+https://github.com/andysaktia/strongs-dictionary-json.git"
   },
   "license": "SEE LICENSE-DATA",
   "author": "",

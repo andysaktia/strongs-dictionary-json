@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>strongs-dictionary-json — Cari Kamus Ibrani &amp; Yunani</title>
+<meta name="description" content="Cari 14.000+ entri Strong's Hebrew &amp; Greek Dictionary, dwibahasa Indonesia-Inggris." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Spectral+SC:wght@600&family=Noto+Sans+Hebrew:wght@400;600&family=Noto+Sans+Greek:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #EDE6D6;
+    --parchment-light: #F7F2E7;
+    --ink: #1F2A44;
+    --ink-soft: #3A4560;
+    --gold: #A9762F;
+    --wax: #8B3A3A;
+    --muted: #6B665A;
+    --line: #D8CFB8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, serif;
+    line-height: 1.6;
+    padding: 0 20px 80px;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  header {
+    padding: 56px 0 32px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-family: 'Spectral SC', serif;
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: 0.02em;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 16px;
+    margin: 0 0 28px;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 10px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  #q {
+    flex: 1;
+    font-family: inherit;
+    font-size: 17px;
+    padding: 12px 16px;
+    border: 1px solid var(--ink);
+    border-radius: 3px;
+    background: var(--parchment-light);
+    color: var(--ink);
+  }
+
+  #q:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(169, 118, 47, 0.35);
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 5px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-soft);
+    background: var(--parchment-light);
+    cursor: pointer;
+  }
+
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+
+  main { padding-top: 32px; }
+
+  .status {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 20px 0;
+  }
+
+  .result-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .result-item {
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    background: var(--parchment-light);
+    cursor: pointer;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .result-item:hover { border-color: var(--gold); }
+
+  .result-item .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    min-width: 44px;
+  }
+
+  .result-item .lemma {
+    font-size: 18px;
+  }
+
+  .result-item .lemma.hebrew { font-family: 'Noto Sans Hebrew', serif; direction: rtl; }
+  .result-item .lemma.greek { font-family: 'Noto Sans Greek', serif; }
+
+  .result-item .snippet {
+    color: var(--muted);
+    font-size: 14px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card {
+    background: var(--parchment-light);
+    border: 1px solid var(--ink);
+    border-radius: 6px;
+    padding: 28px 32px;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .seal {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--parchment-light);
+    background: var(--wax);
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .card-top .lang-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+  }
+
+  .card-lemma {
+    font-size: 40px;
+    margin: 4px 0 6px;
+    line-height: 1.2;
+  }
+
+  .card-lemma.hebrew { font-family: 'Noto Sans Hebrew', serif; direction: rtl; }
+  .card-lemma.greek { font-family: 'Noto Sans Greek', serif; }
+
+  .card-translit {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0 0 20px;
+  }
+
+  .card-translit .dot { margin: 0 6px; }
+
+  .def-block {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+
+  .def-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin: 0 0 6px;
+  }
+
+  .def-text { margin: 0; font-size: 16px; }
+  .def-text.empty { color: var(--muted); font-style: italic; }
+
+  .kjv-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .kjv-tag {
+    font-size: 12px;
+    padding: 3px 9px;
+    background: var(--parchment);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-soft);
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--gold);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+
+  footer a { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">strongs-dictionary-json &middot; data layer showcase</p>
+    <h1>Kamus Strong's Ibrani &amp; Yunani</h1>
+    <p class="sub">14.197 entri, dwibahasa Indonesia &amp; Inggris. Cari lemma, transliterasi, atau nomor Strong.</p>
+    <div class="search-row">
+      <input id="q" type="text" placeholder="cth. H430, agape, kasih" autocomplete="off" />
+    </div>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <main id="main">
+    <p class="status">Memuat dataset dari jsDelivr CDN...</p>
+  </main>
+
+  <footer>
+    Data dari <a href="https://github.com/openscriptures" target="_blank" rel="noopener">OpenScriptures</a>,
+    terjemahan Indonesia dibantu AI &amp; tinjauan komunitas.
+    Lihat <a href="../README.md">dokumentasi lengkap</a> di repo ini.
+  </footer>
+</div>
+
+<script>
+  // GANTI dua baris ini setelah repo di-push ke GitHub:
+  const GH_USER = "REPLACE_ORG";
+  const GH_REPO = "strongs-dictionary-json";
+  const DATA_URL = `https://cdn.jsdelivr.net/gh/andysaktia/strongs-dictionary-json@main/data/combined/strongs-full.json`;
+
+  const EXAMPLE_CHIPS = ["H430", "G26", "agape", "judges", "H3068"];
+
+  let DATA = null;
+  const mainEl = document.getElementById("main");
+  const qEl = document.getElementById("q");
+  const chipsEl = document.getElementById("chips");
+
+  EXAMPLE_CHIPS.forEach((term) => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = term;
+    chip.onclick = () => { qEl.value = term; runSearch(term); };
+    chipsEl.appendChild(chip);
+  });
+
+  function escapeHtml(s) {
+    return (s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  // Transliterasi di dataset pakai diakritik (mis. "agápē", "Yᵉhôvâh"),
+  // sementara orang biasanya mengetik tanpa aksen ("agape", "Yehovah").
+  // Normalisasi ini melepas tanda diakritik sebelum dibandingkan, supaya
+  // pencarian tetap ketemu meski user tidak mengetik aksennya persis.
+  function normalize(s) {
+    return (s || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+
+  function renderList(items) {
+    if (items.length === 0) {
+      mainEl.innerHTML = '<p class="status">Tidak ditemukan. Coba nomor Strong (H430) atau kata dalam bahasa Inggris/Indonesia.</p>';
+      return;
+    }
+    const langClass = (e) => e.language === "hebrew" ? "hebrew" : "greek";
+    const rows = items.slice(0, 30).map((e) => `
+      <li class="result-item" data-num="${e.strong_number}">
+        <span class="num">${e.strong_number}</span>
+        <span class="lemma ${langClass(e)}">${escapeHtml(e.lemma)}</span>
+        <span class="snippet">${escapeHtml(e.definition.id || e.definition.en)}</span>
+      </li>
+    `).join("");
+    mainEl.innerHTML = `<ul class="result-list">${rows}</ul>`;
+    mainEl.querySelectorAll(".result-item").forEach((el) => {
+      el.onclick = () => renderDetail(el.dataset.num);
+    });
+  }
+
+  function renderDetail(strongNumber) {
+    const e = DATA.find((x) => x.strong_number === strongNumber);
+    if (!e) return;
+    const langClass = e.language === "hebrew" ? "hebrew" : "greek";
+    const kjv = (e.kjv_translations || []).map((k) => `<span class="kjv-tag">${escapeHtml(k)}</span>`).join("");
+    mainEl.innerHTML = `
+      <span class="back-link" id="back">&larr; kembali ke hasil pencarian</span>
+      <div class="card">
+        <div class="card-top">
+          <div class="seal">${escapeHtml(e.strong_number)}</div>
+          <div>
+            <p class="lang-tag">${e.language === "hebrew" ? "Ibrani" : "Yunani"} &middot; ${e.translation_status}</p>
+          </div>
+        </div>
+        <p class="card-lemma ${langClass}">${escapeHtml(e.lemma)}</p>
+        <p class="card-translit">
+          ${escapeHtml(e.transliteration || "")}
+          ${e.pronunciation ? `<span class="dot">&middot;</span>${escapeHtml(e.pronunciation)}` : ""}
+        </p>
+        <div class="def-block">
+          <p class="def-label">Definisi (EN)</p>
+          <p class="def-text">${escapeHtml(e.definition.en)}</p>
+        </div>
+        <div class="def-block">
+          <p class="def-label">Definisi (ID)</p>
+          <p class="def-text ${e.definition.id ? "" : "empty"}">${e.definition.id ? escapeHtml(e.definition.id) : "Belum diterjemahkan (translation_status: pending)"}</p>
+        </div>
+        ${kjv ? `<div class="def-block"><p class="def-label">Kata KJV terkait</p><div class="kjv-tags">${kjv}</div></div>` : ""}
+      </div>
+    `;
+    document.getElementById("back").onclick = () => runSearch(qEl.value);
+  }
+
+  function runSearch(query) {
+    if (!DATA) return;
+    const q = query.trim();
+    if (!q) {
+      mainEl.innerHTML = '<p class="status">Ketik nomor Strong (mis. H430) atau kata kunci untuk mulai mencari.</p>';
+      return;
+    }
+    const exact = /^[HG]\d+$/i.test(q);
+    if (exact) {
+      const found = DATA.find((e) => e.strong_number.toUpperCase() === q.toUpperCase());
+      if (found) { renderDetail(found.strong_number); return; }
+    }
+    const qNorm = normalize(q);
+    const results = DATA.filter((e) =>
+      e.lemma.includes(q) ||
+      normalize(e.transliteration).includes(qNorm) ||
+      normalize(e.definition.en).includes(qNorm) ||
+      normalize(e.definition.id).includes(qNorm) ||
+      (e.kjv_translations || []).some((k) => normalize(k).includes(qNorm))
+    );
+    renderList(results);
+  }
+
+  let debounceTimer;
+  qEl.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => runSearch(qEl.value), 200);
+  });
+
+  fetch(DATA_URL)
+    .then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .then((json) => {
+      DATA = json;
+      mainEl.innerHTML = '<p class="status">Ketik nomor Strong (mis. H430) atau kata kunci untuk mulai mencari.</p>';
+    })
+    .catch((err) => {
+      mainEl.innerHTML = `
+        <p class="status">
+          Tidak bisa memuat dataset dari jsDelivr.<br/>
+          Ini normal jika repo belum di-push/tag, atau <code>GH_USER</code> di script belum diganti.<br/>
+          Detail: ${escapeHtml(err.message)}
+        </p>`;
+    });
+</script>
+</body>
+</html>

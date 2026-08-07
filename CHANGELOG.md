@@ -22,3 +22,6 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/).
 ### Notes
 - Terjemahan Indonesia (`translation_status`) masih 100% `"pending"` —
   belum ada entri yang diterjemahkan.
+- **Halaman demo pencarian** (`docs/index.html`) — statis, tema manuskrip,
+  fetch data dari jsDelivr CDN, siap dipublikasikan via GitHub Pages.
+  Pencarian toleran diakritik (mis. "agape" tetap menemukan "agápē").
