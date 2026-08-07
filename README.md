@@ -10,7 +10,7 @@
 [![Data License: CC BY 4.0](https://img.shields.io/badge/data%20license-CC%20BY%204.0-lightgrey.svg)](LICENSE-DATA)
 
 
-**[🔍 Coba Live Demo →](https://REPLACE_ORG.github.io/strongs-dictionary-json/)** — cari langsung dari 14.197 entri tanpa clone/install apapun.
+**[🔍 Coba Live Demo →](https://andysaktia.github.io/strongs-dictionary-json/)** — cari langsung dari 14.197 entri tanpa clone/install apapun.
 
 ---
 
