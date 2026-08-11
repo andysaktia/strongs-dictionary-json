@@ -39,8 +39,6 @@ Catatan desain (lihat README > "Alur Terjemahan"):
     - Berjalan secara batch kecil (default 20 entri/panggilan) supaya
       mudah diaudit dan dihentikan/diulang tanpa kehilangan progres.
     - Selalu tulis ulang file output setelah setiap batch (resume-safe).
-
-    python scripts/translate_id.py --input data/hebrew/strongs-hebrew.json --provider ollama --ollama-model gemma3:4b --limit 5
 """
 
 import argparse
@@ -65,10 +63,20 @@ DEFAULT_RULES_PATH = Path(__file__).resolve().parent / "translation_rules.yaml"
 
 BASE_SYSTEM_PROMPT = (
     "Anda adalah penerjemah ahli untuk istilah teologis Ibrani dan Yunani "
-    "dari Strong's Dictionary ke Bahasa Indonesia. Terjemahkan definisi "
-    "berikut secara ringkas dan akurat, konsisten dengan istilah yang "
-    "lazim dipakai Alkitab terjemahan Indonesia (LAI/TB). Jangan "
-    "menambahkan penjelasan lain, kembalikan HANYA teks terjemahan."
+    "dari Strong's Dictionary ke Bahasa Indonesia. Terjemahkan SETIAP "
+    "definisi berikut secara LENGKAP DAN UTUH -- jangan dipotong atau "
+    "disingkat jadi satu-dua kata saja. Terjemahkan seluruh kalimat "
+    "definisi apa adanya, termasuk semua frasa penjelas di dalamnya, "
+    "konsisten dengan istilah yang lazim dipakai Alkitab terjemahan "
+    "Indonesia (LAI/TB). Jangan menambahkan penjelasan lain, kembalikan "
+    "HANYA teks terjemahan.\n\n"
+    "CONTOH (perhatikan hasil MENERJEMAHKAN SELURUH KALIMAT, bukan cuma "
+    "mengambil satu kata kunci):\n"
+    "EN: \"a primitive word; father, in a literal and immediate, or "
+    "figurative and remote application\"\n"
+    "ID YANG BENAR: \"kata dasar; ayah, dalam penerapan yang harfiah dan "
+    "langsung, atau kiasan dan jauh\"\n"
+    "ID YANG SALAH (terlalu dipotong, JANGAN seperti ini): \"ayah\""
 )
 
 
@@ -118,10 +126,43 @@ def build_user_prompt(texts: list[str], lemmas: list[str]) -> str:
         f"{i+1}. [lemma: {lemma or '-'}] {t}" for i, (t, lemma) in enumerate(zip(texts, lemmas))
     )
     return (
-        "Terjemahkan setiap definisi berikut ke Bahasa Indonesia. "
+        "Terjemahkan setiap definisi berikut ke Bahasa Indonesia SECARA "
+        "LENGKAP (terjemahkan seluruh kalimat, jangan hanya satu kata). "
         "Balas HANYA dalam format JSON array of string, urutan harus sama "
         f"persis, tanpa teks lain di luar JSON.\n\n{numbered}"
     )
+
+
+def escape_newlines_in_strings(text: str) -> str:
+    """Escape newline literal HANYA jika berada di dalam string JSON (di
+    antara tanda kutip), bukan newline struktural di luar string. Model
+    lokal (Ollama) kadang menyisipkan newline mentah di dalam nilai
+    string, yang membuat JSON tidak valid ('Unterminated string'). Regex
+    biasa tidak cukup di sini karena akan ikut mengganti newline
+    struktural di luar string dan malah merusak JSON -- perlu state
+    machine sederhana yang melacak apakah posisi kursor sedang di dalam
+    string atau tidak."""
+    result = []
+    in_string = False
+    escape_next = False
+    for ch in text:
+        if escape_next:
+            result.append(ch)
+            escape_next = False
+            continue
+        if ch == "\\":
+            result.append(ch)
+            escape_next = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            result.append(ch)
+            continue
+        if ch == "\n" and in_string:
+            result.append("\\n")
+            continue
+        result.append(ch)
+    return "".join(result)
 
 
 def extract_json_array(raw: str) -> list:
@@ -129,17 +170,39 @@ def extract_json_array(raw: str) -> list:
     luar JSON) lalu parse jadi list. Model lokal (Ollama) sering kurang
     disiplin ikut instruksi 'HANYA JSON' dibanding Claude, jadi ekstraksi
     di sini lebih toleran: cari substring [...] pertama kalau parse
-    langsung gagal."""
+    langsung gagal, lalu coba perbaiki newline literal di dalam string
+    (penyebab umum error 'Unterminated string' dari model lokal)."""
+    original = raw
     raw = raw.strip()
     raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        start = raw.find("[")
-        end = raw.rfind("]")
-        if start != -1 and end != -1 and end > start:
-            return json.loads(raw[start : end + 1])
-        raise
+
+    def try_parse(text: str):
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            return None
+
+    result = try_parse(raw)
+    if result is not None:
+        return result
+
+    start = raw.find("[")
+    end = raw.rfind("]")
+    if start != -1 and end != -1 and end > start:
+        candidate = raw[start : end + 1]
+        result = try_parse(candidate)
+        if result is not None:
+            return result
+
+        fixed = escape_newlines_in_strings(candidate)
+        result = try_parse(fixed)
+        if result is not None:
+            return result
+
+    snippet = original.strip()[:500]
+    raise ValueError(
+        f"Gagal parse output model jadi JSON. Cuplikan output mentah (500 char pertama):\n{snippet}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -174,13 +237,31 @@ def make_claude_client():
 # Provider: Ollama (lokal, gratis)
 # ---------------------------------------------------------------------------
 
-def translate_batch_ollama(
-    texts: list[str], lemmas: list[str], system_prompt: str, model: str, host: str
-) -> list[str]:
+def build_single_item_prompt(text: str, lemma: str) -> str:
+    return (
+        f"Terjemahkan definisi berikut ke Bahasa Indonesia SECARA LENGKAP "
+        f"(seluruh kalimat, jangan hanya satu kata). Balas HANYA dengan "
+        f"teks hasil terjemahan, tanpa tanda kutip, tanpa penjelasan, "
+        f"tanpa awalan apapun.\n\n"
+        f"Lemma asli: {lemma or '-'}\n"
+        f"Definisi: {text}"
+    )
+
+
+def translate_single_ollama(text: str, lemma: str, system_prompt: str, model: str, host: str) -> str:
+    """Terjemahkan SATU entri per panggilan, pakai teks polos (bukan JSON).
+
+    Model kecil seperti gemma3:4b terbukti tidak reliable diminta balas
+    JSON array untuk banyak item sekaligus -- kadang malah mengembalikan
+    angka indeks/nomor urut dari prompt (mis. ["1","2","3"]) alih-alih
+    terjemahan sungguhan. Memproses satu per satu dengan teks polos
+    (tanpa format="json", tanpa struktur array) menghilangkan seluruh
+    sumber kebingungan format tersebut -- lebih banyak panggilan API,
+    tapi karena ini lokal/gratis, itu bukan masalah biaya."""
     import urllib.request
     import urllib.error
 
-    prompt = build_user_prompt(texts, lemmas)
+    prompt = build_single_item_prompt(text, lemma)
     payload = {
         "model": model,
         "messages": [
@@ -188,9 +269,6 @@ def translate_batch_ollama(
             {"role": "user", "content": prompt},
         ],
         "stream": False,
-        # format="json" membantu model lokal lebih disiplin balas JSON,
-        # meski tidak sekuat instruksi eksplisit pada model besar.
-        "format": "json",
         "options": {"temperature": 0.2},
     }
     req = urllib.request.Request(
@@ -212,7 +290,38 @@ def translate_batch_ollama(
     raw = body.get("message", {}).get("content", "")
     if not raw:
         raise RuntimeError(f"Respons Ollama kosong/tidak terduga: {body}")
-    return extract_json_array(raw)
+
+    # Bersihkan pembungkus umum: tanda kutip di awal/akhir, code fence,
+    # atau awalan seperti "Terjemahan:" yang kadang tetap disisipkan
+    # model meski sudah diminta HANYA teks terjemahan.
+    cleaned = raw.strip()
+    cleaned = cleaned.removeprefix("```").removesuffix("```").strip()
+    if cleaned.startswith('"') and cleaned.endswith('"') and len(cleaned) > 1:
+        cleaned = cleaned[1:-1]
+    for prefix in ["Terjemahan:", "Jawaban:", "ID:", "Hasil:"]:
+        if cleaned.startswith(prefix):
+            cleaned = cleaned[len(prefix):].strip()
+
+    return cleaned
+
+
+def translate_batch_ollama(
+    texts: list[str], lemmas: list[str], system_prompt: str, model: str, host: str
+) -> list:
+    """Wrapper supaya signature tetap konsisten dengan translate_batch_claude
+    (terima list, kembalikan list) meski di baliknya proses satu-per-satu.
+    Kegagalan satu item TIDAK menggagalkan item lain dalam batch yang sama
+    -- item yang gagal diberi nilai None (di-skip saat penyimpanan, tetap
+    berstatus 'pending' supaya bisa dicoba ulang nanti)."""
+    results = []
+    for idx, (text, lemma) in enumerate(zip(texts, lemmas)):
+        try:
+            translated = translate_single_ollama(text, lemma, system_prompt, model, host)
+            results.append(translated)
+        except Exception as e:
+            print(f"    [WARN] Item ke-{idx+1} dalam batch gagal ({e}), di-skip (tetap 'pending').")
+            results.append(None)
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -280,14 +389,31 @@ def main():
             print(f"[WARN] Jumlah hasil tidak cocok ({len(translations)} vs {len(batch_idx)}), skip batch ini.")
             continue
 
+        saved_count = 0
         for i, translated in zip(batch_idx, translations):
+            if translated is None:
+                continue  # item ini gagal di provider, tetap 'pending' untuk dicoba ulang nanti
+
+            # Quality check sederhana: kalau terjemahan jauh lebih pendek
+            # dari definisi EN asli (rasio < 25% karakter), kemungkinan
+            # besar model menyingkat jadi satu kata alih-alih menerjemahkan
+            # kalimat penuh. Tetap disimpan (lebih baik ada draft daripada
+            # kosong), tapi ditandai jelas di log supaya tidak lolos tanpa
+            # disadari saat review manual nanti.
+            en_len = len(data[i]["definition"]["en"])
+            id_len = len(translated or "")
+            if en_len > 0 and id_len / en_len < 0.25:
+                print(f"    [PERINGATAN KUALITAS] {data[i]['strong_number']}: terjemahan "
+                      f"jauh lebih pendek dari EN asli ({id_len} vs {en_len} karakter) -- "
+                      f"kemungkinan disingkat berlebihan, cek manual: \"{translated}\"")
             data[i]["definition"]["id"] = translated
             data[i]["translation_status"] = "machine"
+            saved_count += 1
 
         with output.open("w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-        print(f"[OK] Batch {start}-{start+len(batch_idx)} selesai, tersimpan ke {output}")
+        print(f"[OK] Batch {start}-{start+len(batch_idx)}: {saved_count}/{len(batch_idx)} tersimpan ke {output}")
         time.sleep(1 if args.provider == "claude" else 0)  # jeda sopan hanya untuk API berbayar
 
     print("Selesai. Ingat: entri berstatus 'machine' perlu direview manusia sebelum dianggap 'reviewed'.")

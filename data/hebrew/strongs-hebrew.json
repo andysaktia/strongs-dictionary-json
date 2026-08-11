@@ -8,7 +8,7 @@
     "part_of_speech": "n-m",
     "definition": {
       "en": "a primitive word; father, in a literal and immediate, or figurative and remote application",
-      "id": null
+      "id": "kata dasar; ayah, dalam penerapan yang harfiah dan langsung, atau kiasan dan jauh"
     },
     "kjv_translations": [
       "chief",
@@ -20,7 +20,7 @@
     "derivatives": [],
     "occurrences_count": null,
     "source": "openscriptures-hebrew-strongs",
-    "translation_status": "pending"
+    "translation_status": "machine"
   },
   {
     "strong_number": "H2",
@@ -31,7 +31,7 @@
     "part_of_speech": "n-m",
     "definition": {
       "en": "(Aramaic) corresponding to 1",
-      "id": null
+      "id": "ayah, sesuai dengan 1"
     },
     "kjv_translations": [
       "father."
@@ -40,7 +40,7 @@
     "derivatives": [],
     "occurrences_count": null,
     "source": "openscriptures-hebrew-strongs",
-    "translation_status": "pending"
+    "translation_status": "machine"
   },
   {
     "strong_number": "H3",
@@ -51,7 +51,7 @@
     "part_of_speech": "n-m",
     "definition": {
       "en": "from the same as 24; a green plant",
-      "id": null
+      "id": "tanaman hijau, sama dengan 24"
     },
     "kjv_translations": [
       "greenness",
@@ -61,7 +61,7 @@
     "derivatives": [],
     "occurrences_count": null,
     "source": "openscriptures-hebrew-strongs",
-    "translation_status": "pending"
+    "translation_status": "machine"
   },
   {
     "strong_number": "H4",
@@ -72,7 +72,7 @@
     "part_of_speech": "n-m",
     "definition": {
       "en": "(Aramaic) corresponding to 3",
-      "id": null
+      "id": "kata dasar; batu, kerikil, batu-batu kecil, atau sesuatu yang keras dan tidak mudah ditembus"
     },
     "kjv_translations": [
       "fruit."
@@ -81,7 +81,7 @@
     "derivatives": [],
     "occurrences_count": null,
     "source": "openscriptures-hebrew-strongs",
-    "translation_status": "pending"
+    "translation_status": "machine"
   },
   {
     "strong_number": "H5",
@@ -92,7 +92,7 @@
     "part_of_speech": "n-pr-m",
     "definition": {
       "en": "of foreign origin; Abagtha, a eunuch of Xerxes",
-      "id": null
+      "id": "kata dari asal asing; Abagtha, seorang pemabuk Xerxes"
     },
     "kjv_translations": [
       "Abagtha."
@@ -101,7 +101,7 @@
     "derivatives": [],
     "occurrences_count": null,
     "source": "openscriptures-hebrew-strongs",
-    "translation_status": "pending"
+    "translation_status": "machine"
   },
   {
     "strong_number": "H6",

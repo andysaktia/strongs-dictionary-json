@@ -3,6 +3,7 @@
   "hebrew_entries": 8674,
   "greek_entries": 5523,
   "translation_status_breakdown": {
-    "pending": 14197
+    "machine": 5,
+    "pending": 14192
   }
 }
